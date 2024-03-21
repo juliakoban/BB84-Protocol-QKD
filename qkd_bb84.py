@@ -1,26 +1,35 @@
 import random
 
-class User():
-    def __init__(self, name):
-        self.name = name
+class Sender():
+    def __init__(self):
         self.bits = []
         self.basis = []
-        self.results = []
 
     def generate_bit_string(self, length):
         # User generates a random bit string that he wants to transmit securely
         self.bits = [random.randint(0, 1) for _ in range(length)]
-        print(self.bits)
+        print(f"Sender's bits: {self.bits}")
 
     def generate_basis(self, length):
         # User randomly choose a basis (either Rectilinear or Diagonal)
         # The choice of basis determines how the qubit will be polarized
         self.basis = [random.choice(["+", "x"]) for _ in range(length)]
-        print(self.basis)
+        print(f"Sender's basis: {self.basis}")
 
-    def measure_signal(self, user):
-        self.results = [user.bits[_] if user.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(user.bits))]
-        print(self.results)
+class Receiver():
+    def __init__(self):
+        self.basis = []
+        self.results = []
+
+    def generate_basis(self, length):
+        # User randomly choose a basis (either Rectilinear or Diagonal)
+        # The choice of basis determines how the qubit will be measured
+        self.basis = [random.choice(["+", "x"]) for _ in range(length)]
+        print(f"Receiver's basis: {self.basis}")
+
+    def measure_signal(self, sender):
+        self.results = [sender.bits[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(sender.bits))]
+        print(f"Measured signal: {self.results}")
 
 
 def sifted_key(sender, receiver):
@@ -29,7 +38,7 @@ def sifted_key(sender, receiver):
         if sender.basis[_] == receiver.basis[_]:
             sifted_key.append(sender.bits[_])
         continue
-    print(sifted_key)
+    print(f"Sifted key: {sifted_key}")
 
 def quantum_channel(sender, receiver, length):
     # Preparation, transmission, measurement
@@ -44,8 +53,8 @@ def public_channel(sender, receiver):
     sifted_key(sender, receiver)
 
 def main():
-    alice = User("Alice")
-    bob = User("Bob")
+    alice = Sender()
+    bob = Receiver()
     bit_string_length = 10
 
     quantum_channel(alice, bob, bit_string_length)
