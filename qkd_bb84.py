@@ -1,12 +1,14 @@
-import Sender, Receiver, Channels, Eavesdropper
+import Alice, Bob, Channels, Eve
 
 def main():
-    alice = Sender.Sender()
-    bob = Receiver.Receiver()
+    alice = Alice.Alice()
+    bob = Bob.Bob()
+    eve = Eve.Eve()
+
     bit_string_length = 10
 
-    Channels.quantum_channel(alice, bob, bit_string_length)
-    Channels.public_channel(alice, bob)
+    Channels.quantum_channel(alice, bob, eve, bit_string_length)
+    Channels.public_channel(alice, bob, eve)
 
 if __name__ == "__main__":
     main()
