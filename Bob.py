@@ -27,6 +27,6 @@ class Bob():
 
     def measure_signal(self, sender):
         self.bits = [sender.bits[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(sender.bits))]
-        self.print_measurement(sender)
+        #self.print_measurement(sender)
         
         
