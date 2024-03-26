@@ -12,15 +12,13 @@ class Bob:
             print(self.basis[_], end=" ")
         print()
 
-    def print_measurement(self, sender):
+    def print_measurement(self, sender, length):
         print("Bob measures: ", end="        ")
-        for _ in range(len(sender.bits)):
+        for _ in range(length):
             if sender.basis[_] == self.basis[_]:
                 print(colored(self.basis[_], "green"), end=" ")
             else:
-                print(
-                    colored(self.basis[_], "blue"), end=" "
-                )  # blue color means that it is probabilistic
+                print(colored(self.basis[_], "blue"), end=" ")  # blue color means that it is probabilistic
         print()
 
     def generate_basis(self, length):
@@ -29,8 +27,5 @@ class Bob:
         self.basis = [random.choice(["+", "x"]) for _ in range(length)]
 
     def measure_signal(self, sender):
-        self.bits = [
-            sender.bits[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1)
-            for _ in range(len(sender.bits))
-        ]
-        # self.print_measurement(sender)
+        self.bits = [sender.bits[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(sender.bits))]
+
