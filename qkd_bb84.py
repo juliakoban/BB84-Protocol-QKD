@@ -5,7 +5,7 @@ def main():
     bob = Bob.Bob()
     eve = Eve.Eve()
 
-    bit_string_length = 10
+    bit_string_length = 50
 
     Channels.quantum_channel(alice, bob, eve, bit_string_length)
     Channels.public_channel(alice, bob, eve)

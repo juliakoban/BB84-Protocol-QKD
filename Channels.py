@@ -1,4 +1,5 @@
 from termcolor import colored
+import math
 
 def quantum_channel(sender, receiver, eavesdropper, length):
     # Preparation, transmission, measurement
@@ -43,7 +44,6 @@ def eve_information(sender, receiver, eavesdropper):
         else: print(" ", end=" ") 
     print()
 
-    
 def alice_shared_key(sender, receiver):
     print(f"Alice's shared key: ", end = "  ")
     for _ in range(len(sender.bits)):
@@ -60,14 +60,32 @@ def bob_shared_key(sender, receiver):
         else: print(" ", end=" ")
     print()
 
+def eve_detection(sender, receiver, eavesdropper):
+    sus_bits_indexes = []
+    detection = 0
+    for _ in range(len(sender.bits)):
+        if sender.basis[_] == receiver.basis[_]:
+            sus_bits_indexes.append(_)
+
+    for _ in range(0, len(sus_bits_indexes), 3):
+        if sender.bits[sus_bits_indexes[_]] != receiver.bits[sus_bits_indexes[_]]:
+            detection += 1
+
+    print(f"With {math.floor((len(sus_bits_indexes)) / 3)} (out of {len(sus_bits_indexes)} filtered bits) sacrificed bits, Eve is detected {detection} time(s).")
+
 def public_channel(sender, receiver, eavesdropper):
     # Sender (Alice) and receiver (Bob) publicly communicate the bases they used for qubit preparation and measurement
     bases_comparison(sender, receiver)
 
-    # Based on the agreed-upon bases, they filter out the bits where they used different bases
+    # Based on the agreed-upon bases, Alice filters out the bits where they used different bases
     alice_shared_key(sender, receiver)
-    bob_shared_key(sender, receiver)
 
     eve_information(sender, receiver, eavesdropper)
-    eve_error(sender, receiver, eavesdropper)
+    error = eve_error(sender, receiver, eavesdropper)
+
+    # Based on the agreed-upon bases, Bob filters out the bits where they used different bases
+    bob_shared_key(sender, receiver)
+
+    print(f"Eve introduces an error, with a 50% probability of being detected, {error * 100 / len(sender.bits)}% of the time.")
+    eve_detection(sender, receiver, eavesdropper)
     
