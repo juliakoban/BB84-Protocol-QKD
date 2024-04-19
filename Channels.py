@@ -5,13 +5,14 @@ def quantum_channel(sender, receiver, eavesdropper, length):
     # Preparation, transmission, measurement
     sender.generate_bit_string(length)
     sender.generate_basis(length)
-
     receiver.generate_basis(length)
+
     if eavesdropper != None:
         eavesdropper.generate_basis(length)
         eavesdropper.measure_signal(sender)
         receiver.measure_signal(eavesdropper)
         return
+    
     receiver.measure_signal(sender)
 
 def bases_comparison(sender, receiver, length):
@@ -21,6 +22,10 @@ def bases_comparison(sender, receiver, length):
             print(colored("\u2714", "green"), end=" ")
         else: print(colored("X", "red"), end=" ") 
     print()
+
+def public_channel(sender, receiver, length):
+    # Sender (Alice) and receiver (Bob) publicly communicate the bases they used for qubit preparation and measurement
+    bases_comparison(sender, receiver, length)
 
 def eve_error(sender, receiver, eavesdropper, length):
     error = 0
@@ -37,20 +42,32 @@ def eve_error(sender, receiver, eavesdropper, length):
     return error
 
 def eve_information(sender, receiver, eavesdropper, length):
+    information = 0
     print("Eve's information: ", end="   ")
+    for _ in range(len(sender.basis)):
+        if sender.basis[_] == receiver.basis[_] and sender.basis[_] == eavesdropper.basis[_]:
+            information += 1
+            
     for _ in range(length):
         if sender.basis[_] == receiver.basis[_] and sender.basis[_] == eavesdropper.basis[_]:
             print(sender.bits[_], end=" ")
         else: print(" ", end=" ") 
     print()
+    return information
 
 def alice_shared_key(sender, receiver, length):
+    key_length = 0
     print(f"Alice's shared key: ", end = "  ")
+    for _ in range(len(sender.bits)):
+        if sender.basis[_] == receiver.basis[_]:
+            key_length += 1
+  
     for _ in range(length):
         if sender.basis[_] == receiver.basis[_]:
                 print(sender.bits[_], end=" ")
         else: print(" ", end=" ")
     print()
+    return key_length
 
 def bob_shared_key(sender, receiver, length): 
     print(f"Bob's shared key: ", end = "    ")
@@ -72,30 +89,37 @@ def eve_detection(sender, receiver):
             detection += 1
 
     print(f"With {math.floor((len(sus_bits_indexes)) / 3)} (out of {len(sus_bits_indexes)} filtered bits) sacrificed bits, Eve is detected {detection} times.")
+    print(f"QBER (quantum bit error rate): {round(detection * 100 / len(sus_bits_indexes), 1)}%")
 
-def printing_results(sender, receiver, eavesdropper):
-    # Printing a part of results 
-    length = math.floor(len(sender.bits) / 4)
-
+def printing_results(sender, receiver, eavesdropper, length):
+    print()
     sender.print_bits(length)
     sender.print_basis(length)
 
-    eavesdropper.print_measurement(sender, length)
-    receiver.print_measurement(sender, length)
+    if eavesdropper != None:
+        eavesdropper.print_measurement(sender, length)
 
-    # Sender (Alice) and receiver (Bob) publicly communicate the bases they used for qubit preparation and measurement
-    bases_comparison(sender, receiver, length)
+    receiver.print_measurement(sender, length)  
+
+    public_channel(sender, receiver, length)
+
     # Based on the agreed-upon bases, Alice filters out the bits where they used different bases
-    alice_shared_key(sender, receiver, length)
-    # Information that Eve gets and gets undetected
-    eve_information(sender, receiver, eavesdropper, length)
-    # Information that Eve gets and can get detected
-    error = eve_error(sender, receiver, eavesdropper, length)
+    key_length = alice_shared_key(sender, receiver, length)
+    
+    if eavesdropper != None:
+        # Information that Eve gets and gets undetected
+        information = eve_information(sender, receiver, eavesdropper, length)
+        # Information that Eve gets and can get detected
+        error = eve_error(sender, receiver, eavesdropper, length)
+
     # Based on the agreed-upon bases, Bob filters out the bits where they used different bases
     bob_shared_key(sender, receiver, length)
 
-    print(f"Eve introduces an error, with a 50% probability of being detected, {error * 100 / len(sender.bits)}% of the time.")
-    eve_detection(sender, receiver)
+    print()
 
-def public_channel(sender, receiver, eavesdropper):
-    printing_results(sender, receiver, eavesdropper)
+    if eavesdropper != None:
+        print(f"Eve introduces an error, with a 50% probability of being detected, {error * 100 / len(sender.bits)}% of the time.")
+        print(f"Eve gets to know {round(information * 100 / key_length, 1)}% of the key.")
+        eve_detection(sender, receiver)
+    
+    print()

@@ -4,6 +4,7 @@ class Alice():
     def __init__(self):
         self.bits = []
         self.basis = []
+        self.basis_with_error = []
 
     def print_bits(self, length):
         print(f"Initial bit sequence: ", end="")

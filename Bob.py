@@ -5,13 +5,8 @@ class Bob:
     def __init__(self):
         self.basis = []
         self.bits = []
-
-    def print_basis(self, length):
-        print(f"Bob's basis: ", end="         ")
-        for _ in range(length):
-            print(self.basis[_], end=" ")
-        print()
-
+        self.basis_with_error = []
+        
     def print_measurement(self, sender, length):
         print("Bob measures: ", end="        ")
         for _ in range(length):

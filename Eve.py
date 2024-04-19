@@ -5,6 +5,7 @@ class Eve():
     def __init__(self):
         self.bits = []
         self.basis = []
+        self.basis_with_error = []
     
     def print_measurement(self, sender, length):
         print("Eve measures: ", end="        ")
@@ -12,12 +13,6 @@ class Eve():
             if sender.basis[_] == self.basis[_]:
                 print(colored(self.basis[_], "green"), end=" ")
             else: print(colored(self.basis[_], "blue"), end=" ") # blue color means that it is probabilistic
-        print()
-
-    def print_basis(self, length):
-        print(f"Eve's basis: ", end="         ")
-        for _ in range(length):
-            print(self.basis[_], end=" ")
         print()
 
     def generate_basis(self, length):
