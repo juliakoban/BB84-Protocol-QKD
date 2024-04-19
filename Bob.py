@@ -16,10 +16,10 @@ class Bob:
                 print(colored(self.basis[_], "blue"), end=" ")  # blue color means that it is probabilistic
         print()
 
-    def generate_basis(self, length):
+    def generate_basis(self, length, generator):
         # User randomly choose a basis (either Rectilinear or Diagonal)
         # The choice of basis determines how the qubit will be measured
-        self.basis = [random.choice(["+", "x"]) for _ in range(length)]
+        self.basis = [generator.generate_base() for _ in range(length)]
 
     def measure_signal(self, sender):
         self.bits = [sender.bits[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(sender.bits))]

@@ -1,14 +1,14 @@
 from termcolor import colored
 import math
 
-def quantum_channel(sender, receiver, eavesdropper, length):
+def quantum_channel(sender, receiver, eavesdropper, length, generator):
     # Preparation, transmission, measurement
-    sender.generate_bit_string(length)
-    sender.generate_basis(length)
-    receiver.generate_basis(length)
+    sender.generate_bit_string(length, generator)
+    sender.generate_basis(length, generator)
+    receiver.generate_basis(length, generator)
 
     if eavesdropper != None:
-        eavesdropper.generate_basis(length)
+        eavesdropper.generate_basis(length, generator)
         eavesdropper.measure_signal(sender)
         receiver.measure_signal(eavesdropper)
         return

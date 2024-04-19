@@ -15,8 +15,8 @@ class Eve():
             else: print(colored(self.basis[_], "blue"), end=" ") # blue color means that it is probabilistic
         print()
 
-    def generate_basis(self, length):
-        self.basis = [random.choice(["+", "x"]) for _ in range(length)]
+    def generate_basis(self, length, generator):
+        self.basis = [generator.generate_base() for _ in range(length)]
     
     def measure_signal(self, sender):
         # When Eavesdropper is measuring the signal, she is destroying the photons, so she needs to generate a new bit string to send to bob
