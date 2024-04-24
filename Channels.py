@@ -1,19 +1,20 @@
 from termcolor import colored
-import math
+import math, random
 
-def quantum_channel(sender, receiver, eavesdropper, length, generator):
+def quantum_channel(sender, receiver, eavesdropper, length, generator, error):
     # Preparation, transmission, measurement
-    sender.generate_bit_string(length, generator)
+    sender.generate_bit_string(length, generator, error)
     sender.generate_basis(length, generator)
+
     receiver.generate_basis(length, generator)
 
     if eavesdropper != None:
         eavesdropper.generate_basis(length, generator)
         eavesdropper.measure_signal(sender)
-        receiver.measure_signal(eavesdropper)
+        receiver.measure_signal(eavesdropper, length, error)
         return
     
-    receiver.measure_signal(sender)
+    receiver.measure_signal(sender, length, error)
 
 def bases_comparison(sender, receiver, length):
     print("Bases comparison: ", end="    ")
@@ -73,7 +74,7 @@ def bob_shared_key(sender, receiver, length):
     print(f"Bob's shared key: ", end = "    ")
     for _ in range(length):
         if sender.basis[_] == receiver.basis[_]:
-                print(receiver.bits[_], end=" ")
+                print(receiver.bits_with_error[_], end=" ")
         else: print(" ", end=" ")
     print()
 
@@ -85,7 +86,7 @@ def eve_detection(sender, receiver):
             sus_bits_indexes.append(_)
 
     for _ in range(0, len(sus_bits_indexes), 3):
-        if sender.bits[sus_bits_indexes[_]] != receiver.bits[sus_bits_indexes[_]]:
+        if sender.bits[sus_bits_indexes[_]] != receiver.bits_with_error[sus_bits_indexes[_]]:
             detection += 1
 
     print(f"With {math.floor((len(sus_bits_indexes)) / 3)} (out of {len(sus_bits_indexes)} filtered bits) sacrificed bits, Eve is detected {detection} times.")
@@ -116,6 +117,8 @@ def printing_results(sender, receiver, eavesdropper, length):
     bob_shared_key(sender, receiver, length)
 
     print()
+    if eavesdropper == None:
+        print(f"Final shared key length: {key_length}")
 
     if eavesdropper != None:
         print(f"Eve introduces an error, with a 50% probability of being detected, {error * 100 / len(sender.bits)}% of the time.")

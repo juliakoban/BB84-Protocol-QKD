@@ -5,7 +5,6 @@ class Eve():
     def __init__(self):
         self.bits = []
         self.basis = []
-        self.basis_with_error = []
     
     def print_measurement(self, sender, length):
         print("Eve measures: ", end="        ")
@@ -17,7 +16,8 @@ class Eve():
 
     def generate_basis(self, length, generator):
         self.basis = [generator.generate_base() for _ in range(length)]
+        
     
     def measure_signal(self, sender):
         # When Eavesdropper is measuring the signal, she is destroying the photons, so she needs to generate a new bit string to send to bob
-        self.bits = [sender.bits[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(sender.bits))]
+        self.bits = [sender.bits_with_error[_] if sender.basis[_] == self.basis[_] else random.randint(0, 1) for _ in range(len(sender.bits))]

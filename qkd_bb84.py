@@ -8,10 +8,10 @@ def main():
 
     bit_string_length = 1000
     printing_length = 20
-    error = 5 # in %
+    error = 0
 
     # change eve to None in order to see results without eavesropping
-    Channels.quantum_channel(alice, bob, eve, bit_string_length, qrng_generator) 
+    Channels.quantum_channel(alice, bob, eve, bit_string_length, qrng_generator, error) 
     Channels.printing_results(alice, bob, eve, printing_length)
 
 if __name__ == "__main__":
